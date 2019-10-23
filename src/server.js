@@ -1,43 +1,44 @@
-const express = require('express');
-const session = require('express-session');
+const low = require('lowdb')
 const helmet = require('helmet');
-const bodyParser = require('body-parser');
+const express = require('express');
 const passport = require('passport');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const refresh = require('passport-oauth2-refresh');
 const strategy = require('passport-twitch.js').Strategy;
 require('dotenv').config();
 
 const app = express();
+const FileSync = require('lowdb/adapters/FileSync')
+const adapter = new FileSync('db.json')
+const db = low(adapter)
 
-app.use(session({
-     key: process.env.SESSION_KEY,
-     secret: process.env.SESSION_SECRET,
-     resave: true,
-     saveUninitialized: true,
-     cookie:{
-          secure: true
-     }
-}));
+db.defaults({ users: [] }).write()
 
 app.use(helmet());
-app.use(bodyParser.urlencoded({ extended: true}));
+app.use(cookieParser());
 app.use(bodyParser.json());
+app.use(passport.initialize());
+app.use(bodyParser.urlencoded({ extended: true}));
 
 passport.serializeUser((u,d) => {
      d(null,u);
 });
 
 passport.deserializeUser((u,d) => {
-     d(null,u);
+     let find = db.get('users').find({ id: "u.id" }).value()
+     if(typeof find !== "undefined"){
+          d(null,u);
+     }
 });
 
-let TwitchStrategy = new _strategy({
+let TwitchStrategy = new strategy({
           clientID: process.env.TWITCH_ID,
           clientSecret: process.env.TWITCH_SECRET,
           callbackURL: "http://localhost:3000/auth/twitch/callback",
-          scope: ["guilds", "connections", "email"]
+          scope: ["user_read"]
      }, (accesstoken, refreshToken, profile, done) => {
-          console.log(profile);
           return done(null, profile);
 });
 
@@ -45,20 +46,42 @@ passport.use(TwitchStrategy);
 refresh.use(TwitchStrategy);
 
 app.get('/', (req, res) => {
-     if(!req.session.user){
-          res.redirect('/login');
-     }else{
-          res.send(`Hello ${req.session.user.display_name}`);
-     }
+     res.send("index")
 });
     
 app.get('/login', passport.authenticate('twitch.js'));
+
+app.get('/check', async(req, res) => {
+     
+     console.log(req.cookies.auth)
+     if(typeof req.cookies.auth === "undefined"){
+          console.log("not loged in")
+          res.send("Necesitas logear")
+     }else{
+          console.log("loged in ")
+          let find = await db.get('users').find({ _id: req.cookies.auth.toString() }).value()
+          console.log(find)
+          res.json(find)
+     }
+})
   
 app.get('/auth/twitch/callback', passport.authenticate('twitch.js', { failureRedirect: '/' }), (req, res) => {
-     req.session.user = req.user;
-     console.log(req.user);
-     console.log(req.query);
-     res.redirect('/');
+     let user = {
+          _id: Date.now().toString(),
+          id: req.session.passport.user.id,
+          user: req.session.passport.user.login,
+          avatar: req.session.passport.user.profile_image_url
+     }
+     let find = db.get('users').find({ id: user.id }).value()
+     if(typeof find == "undefined"){
+          db.get('users').push( user ).write()
+          res.cookie('auth', user._id, {
+               maxAge: 60000
+          });
+          res.redirect('/');
+     }else{
+          res.redirect('/');
+     }
 });
 
 app.listen( 3000, ()=>{
