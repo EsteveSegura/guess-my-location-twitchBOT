@@ -16,12 +16,15 @@ const db = low(adapter)
 
 db.defaults({ users: [] }).write()
 
+app.set('view engine', 'ejs');
+app.set('views', './views');
+
 app.use(helmet());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(bodyParser.urlencoded({ extended: true}));
-
+app.use(express.static('./static'));
 passport.serializeUser((u,d) => {
      d(null,u);
 });
@@ -46,7 +49,7 @@ passport.use(TwitchStrategy);
 refresh.use(TwitchStrategy);
 
 app.get('/', (req, res) => {
-     res.send("index")
+     res.render('index.ejs')
 });
     
 app.get('/login', passport.authenticate('twitch.js'));
@@ -83,6 +86,13 @@ app.get('/auth/twitch/callback', passport.authenticate('twitch.js', { failureRed
           res.redirect('/');
      }
 });
+
+app.post('/makeguess', (req,res)=>{
+     let lat = req.body.lat;
+     let long = req.body.long;
+     let id = req.body.id;
+     res.json(req.body)
+})
 
 app.listen( 3000, ()=>{
      console.log("Running");
