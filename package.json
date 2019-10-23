@@ -1,0 +1,36 @@
+{
+  "name": "guess-my-location",
+  "version": "0.0.1",
+  "description": "twitch bot",
+  "main": "server.js",
+  "scripts": {
+    "test": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EsteveSegura/guess-my-location-twitchBOT.git"
+  },
+  "keywords": [
+    "twitch",
+    "bot",
+    "gps",
+    "location",
+    "game"
+  ],
+  "author": "GiR",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EsteveSegura/guess-my-location-twitchBOT/issues"
+  },
+  "homepage": "https://github.com/EsteveSegura/guess-my-location-twitchBOT#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "helmet": "^3.21.2",
+    "passport": "^0.4.0",
+    "passport-oauth2-refresh": "^1.1.0",
+    "passport-twitch.js": "0.0.7"
+  }
+}
