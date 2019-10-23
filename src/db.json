@@ -1,10 +1,24 @@
 {
   "users": [
     {
-      "_id": "1571854629163",
+      "_id": "1571866475522",
       "id": "148382191",
       "user": "girlazo",
-      "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/bf69d347-980f-46f9-bf7b-00b983a41b4f-profile_image-300x300.png"
+      "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/bf69d347-980f-46f9-bf7b-00b983a41b4f-profile_image-300x300.png",
+      "admin": true
     }
-  ]
+  ],
+  "status": true,
+  "winnerBoard": [],
+  "actualGame": [
+    {
+      "lat": 40.42107625193686,
+      "long": -3.6839389801025395,
+      "id": "148382191"
+    }
+  ],
+  "actualAdress": {
+    "lat": "41.3956416",
+    "long": "2.1217692"
+  }
 }

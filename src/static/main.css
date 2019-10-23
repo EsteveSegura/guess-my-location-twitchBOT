@@ -20,9 +20,12 @@ body {
 
 #goMap{
   width: 100%;
-  background: red;
+  border:0;
+  height: 45px;
+  color: white;
+  background: cadetblue;
 }
 
 .panel-body{
-  width: 400px;
+  width: 230px;
 }
