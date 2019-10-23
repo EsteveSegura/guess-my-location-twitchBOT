@@ -88,4 +88,4 @@ typings/
 .dynamodb/
 
 #DB
-./db.json
+./src/db.json
