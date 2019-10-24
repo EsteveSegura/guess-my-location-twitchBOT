@@ -9,14 +9,21 @@
 <body>
      <input type="text" id="street" name="street">
      <button id="send">DATA</button>
+     <div id="search"></div>
      
      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
      <script>
           $("#send").click(()=>{
                console.log($("#street").val())
-               axios.post('http://localhost:3000/startgame',{
+               axios.post('http://localhost:3000/getposibles',{
                     adress : $("#street").val()
+               }).then(function (response) {
+                    console.log(response.data);
+                    for(let i = 0 ; i < response.data.length;i++){
+                         $("#search").append(`${response.data[i].address.road},${response.data[i].address.house_number},${response.data[i].address.suburb},${response.data[i].address.county}, ${response.data[i].address.country}   <br>`)
+
+                    }
                })
           })
      </script>

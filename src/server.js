@@ -85,11 +85,27 @@ app.post('/startgame', async(req,res)=>{
           .then(async (response) => {
                actualAdress = {lat : response.data[0].lat, long: response.data[0].lon}
                console.log(actualAdress)
+               console.log(response.data[0])
+               console.log(`https://nominatim.openstreetmap.org/search?q=${actualAdressSplited}&format=json&polygon=1&addressdetails=1`)
                let find = await db.get('users').find({ _id: req.cookies.auth.toString() }).value()
                if(find.admin){
                     res.send("eres admin : TRUE")
                     db.update('status',value => true).write()
                     db.update('actualAdress', value => actualAdress).write()
+               }else{
+                    res.send("no eres admin")
+               }
+     })
+})
+
+app.post('/getposibles', async(req,res)=>{
+     let actualAdressSplited = req.body.adress.split(" ").join("+");
+     axios.get(`https://nominatim.openstreetmap.org/search?q=${actualAdressSplited}&format=json&polygon=1&addressdetails=1`)
+          .then(async (response) => {
+               let find = await db.get('users').find({ _id: req.cookies.auth.toString() }).value()
+               if(find.admin){
+                    console.log(response.data);
+                    res.send(response.data)
                }else{
                     res.send("no eres admin")
                }
@@ -159,6 +175,7 @@ app.post('/makeguess', async (req,res)=>{
      }
      res.json(req.body)
 })
+
 
 app.listen(3000, ()=>{
      console.log("Running");
