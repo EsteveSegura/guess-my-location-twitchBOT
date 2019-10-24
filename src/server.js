@@ -77,11 +77,14 @@ app.get('/check', async(req, res) => {
      }
 })
 
-app.get('/startgame', async(req,res)=>{
+app.post('/startgame', async(req,res)=>{
+     let actualAdressSplited = req.body.adress.split(" ").join("+");
+     console.log(actualAdressSplited)
      let actualAdress = {}
-     axios.get('https://nominatim.openstreetmap.org/search?q=caponata+13,+barcelona&format=json&polygon=1&addressdetails=1')
+     axios.get(`https://nominatim.openstreetmap.org/search?q=${actualAdressSplited}&format=json&polygon=1&addressdetails=1`)
           .then(async (response) => {
                actualAdress = {lat : response.data[0].lat, long: response.data[0].lon}
+               console.log(actualAdress)
                let find = await db.get('users').find({ _id: req.cookies.auth.toString() }).value()
                if(find.admin){
                     res.send("eres admin : TRUE")
@@ -106,7 +109,7 @@ app.get('/drawwinner', async(req,res)=>{
 app.get('/admin', async(req,res)=>{
      let find = await db.get('users').find({ _id: req.cookies.auth.toString() }).value()
      if(find.admin){
-          res.send("eres admin")
+          res.render("admin.ejs")
      }else{
           res.send("no eres admin")
      }
